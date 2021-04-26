@@ -142,23 +142,97 @@
 }
 
 
-#'	@export
-frag.simul.process <- function(initial.layers=2, n.components, vertices=Inf, edges=Inf, balance=.5, components.balance=.5, disturbance=0, aggreg.factor=0, planar=TRUE){
-  # tests:
-  if(! planar %in% c(T,F)) stop("Planar must be True or False.")
-  if(is.null(n.components)) stop("No 'n.components' parameter.")
-  if(balance <= 0 | balance >= 1) stop("'Balance' must range in ]0;1[")
-  if(disturbance < 0 | disturbance > 1) stop("Disturbance must range in [0;1].")
+.add.disturbance <- function(g, v.to.disturb, asymmetric.transport.from){
+  # default behaviour:
+  v.to.disturb <- sample(seq(1, gorder(g)), v.to.disturb)
+  # if asymmetric.transport.from is set:
+  if( ! is.null(asymmetric.transport.from)){
+    if(length(v.to.disturb) <= length(V(g)[V(g)$layer == asymmetric.transport.from])   ){
+      v.to.disturb <- sample(V(g)[V(g)$layer == asymmetric.transport.from], v.to.disturb)
+    } else{
+      stop("The number of fragments for asymmetric transport exceeds the number of fragments in this layer. Reduce the 'disturbance' value.")
+    }
+  } 
+  V(g)[v.to.disturb]$layer <- as.character(factor(V(g)[v.to.disturb]$layer,
+                                                  levels = c(1,2), labels = c(2,1)))
+  g
+}
+
+
+
+frag.simul.process <- function(initial.layers=2, n.components, vertices=Inf, edges=Inf, balance=.5, components.balance=.5, disturbance=0, aggreg.factor=0, planar=TRUE, asymmetric.transport.from=NULL, from.observed.graph=NULL, observed.layer.attr=NULL){
+  
+  #  If requested input parameters from observed graph (except the number of edges):
+  if( ! is.null(from.observed.graph) & ! is.null(observed.layer.attr)){
+    if( ! is.character(observed.layer.attr))  stop("The parameter 'observed.layer.attr' requires a character value.")
+    if( ! observed.layer.attr %in% names(vertex_attr(from.observed.graph)) ){
+      stop(paste("No '", observed.layer.attr, "' vertices attribute", sep=""))
+    }
+    if(length(unique(vertex_attr(from.observed.graph, observed.layer.attr))) != 2){
+      stop("The layer attribute of the observed graph must contain two layers.")
+    }
+    # run the get.parameters function:
+    params <- frag.get.parameters(from.observed.graph, observed.layer.attr)
+    # input the observed parameters:
+    n.components <- params$n.components
+    vertices <- params$vertices
+    balance <- params$balance
+    components.balance <- params$components.balance
+    disturbance <- params$disturbance
+    aggreg.factor <- params$aggreg.factor
+    planar <- params$planar
+  }
+  
+  # BEGIN Tests:
+  if(! is.logical(planar)) stop("The 'planar' argument must be logical.")
+  if(is.null(n.components)) stop("The 'n.components' parameter is required.")
+  
+  if(! is.numeric(balance)){
+    stop("The 'balance' argument requires a numerical value.")
+  } else if(balance <= 0 | balance >= 1){
+    stop("'balance' values must range in ]0;1[")
+  }
+  
+  if(! is.numeric(components.balance)){
+    stop("The 'components.balance' argument requires a numerical value.")
+  } else if(components.balance <= 0 | components.balance >= 1){
+    stop("'components.balance' values must range in ]0;1[")
+  }
+  
+  if(! is.numeric(disturbance)){
+    stop("The 'disturbance' argument requires a numerical value.")
+  } else if(disturbance < 0 | disturbance > 1){
+    stop("'disturbance' values must range in [0;1].")
+  }
+  
   if(is.infinite(vertices) & is.infinite(edges)){
-    stop("At least one of the parameters 'vertices' or 'edges' must be set.")}
-  if(! initial.layers %in% c(1,2)){stop("'initial.layers' must be either 1 or 2.")}
-  if(aggreg.factor > 1 | aggreg.factor < 0){stop("aggreg.factor must range in [0;1]")}
+    stop("At least one of the parameters 'vertices' or 'edges' is required.")
+  }
+  if(! initial.layers %in% c(1, 2)){
+    stop("The 'initial.layers' parameter requires a numerical value of 1 or 2.")
+  }
+  
+  if(! is.numeric(aggreg.factor)){
+    stop("The 'disturbance' argument requires a numerical value.")
+  } else if(aggreg.factor > 1 | aggreg.factor < 0 ){
+    stop("The 'aggreg.factor' parameter must range in [0;1].")
+  }
+  
+  if( ! is.null(asymmetric.transport.from) ){
+    if(! asymmetric.transport.from %in% c(1, 2, "1", "2")){
+      stop("The 'asymmetric.transport.from' parameter must have a value in 1 or 2.")
+    } 
+  }
+  
+  # END tests.
+  
+  # BEGIN main body of the function:
   
   if(initial.layers == 1){
     g <- .main(n.components, vertices, edges, balance, disturbance, aggreg.factor, planar)
     
     # BALANCE. Determine layer size:
-    v.layer1 <- floor(gorder(g) * balance)
+    v.layer1 <- round(gorder(g) * balance)
     
     # search possible combinations of components and use the first one:
     sel.clusters <- clusters(g)$csize
@@ -170,19 +244,22 @@ frag.simul.process <- function(initial.layers=2, n.components, vertices=Inf, edg
     V(g)$layer <- 2
     V(g)[ V(g)$object.id %in% sel.clusters ]$layer <- 1
     
-    # DISTURBANCE
+    # ADD DISTURBANCE:
     v.to.disturb <- round(gorder(g) * disturbance)
     if(v.to.disturb != 0){
-      v.to.disturb <- sample(1:gorder(g), v.to.disturb)
-      V(g)[v.to.disturb]$layer <- as.character(factor(V(g)[v.to.disturb]$layer,
-                                                      levels=c(1,2), labels=c(2,1)))
+      g <- .add.disturbance(g, v.to.disturb, asymmetric.transport.from)
     }
   }
   
   if(initial.layers == 2){
-    if(!is.infinite(edges)){message("The 'edge' parameter is not used if two 'initial layers' are used.")}
+    if(! is.infinite(edges)){
+      message("The 'edge' parameter is not used if two 'initial layers' are used.")
+    }
     n.components.l1 <- round(n.components * components.balance)
     n.components.l2 <- n.components - n.components.l1
+    if(n.components.l1 == 0 | n.components.l2 == 0){
+      stop("The 'components.balance' is too low or too high.")
+    }
     vertices.l1 <- round(vertices * balance)
     vertices.l2 <- vertices - vertices.l1
     
@@ -205,12 +282,13 @@ frag.simul.process <- function(initial.layers=2, n.components, vertices=Inf, edg
     V(g.layer2)$layer <- 2
     V(g.layer2)$name <- paste(V(g.layer2)$name, ".2", sep="")
     g <- g.layer1 %du% g.layer2
-    # DISTURBANCE
+    # ADD DISTURBANCE:
     v.to.disturb <- round(gorder(g) * disturbance)
-    v.to.disturb <- sample(1:gorder(g), v.to.disturb)
-    V(g)[v.to.disturb]$layer <- as.character(factor(V(g)[v.to.disturb]$layer,
-                                                    levels = c(1,2), labels = c(2,1)))
+    if(v.to.disturb != 0){
+      g <- .add.disturbance(g, v.to.disturb, asymmetric.transport.from)
+    }
   }
+  g <- frag.edges.weighting(g, layer.attr="layer")
   g <- delete_vertex_attr(g, "which")
   g$frag_type <- "cr"
   g

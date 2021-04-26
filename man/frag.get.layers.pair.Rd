@@ -1,10 +1,10 @@
 \name{frag.get.layers.pair}
 \alias{frag.get.layers.pair}
 \title{
-Extracts the subraph corresponding to a pair of stratigraphic layers.
+Extracts the subgraph corresponding to a pair of stratigraphic layers.
 }
 \description{
-Extracts the subraph corresponding to a pair of stratigraphic layers.
+Extracts the subraph corresponding to a pair of stratigraphic layers (or any other type of archaeological spatial unit).
 }
 \usage{
 frag.get.layers.pair(graph, layer.attr, sel.layers, size.mini=2,
@@ -35,4 +35,4 @@ frag.get.layers.pair(g, "layers", sel.layers=c("layer2","layer3"),
 frag.get.layers.pair(g, "layers", sel.layers=c("layer2","layer3"),  
                      size.mini=2, mixed.components.only=TRUE)
 }
-\keyword{graphs}
+\keyword{extraction}

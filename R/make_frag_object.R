@@ -18,26 +18,32 @@ setGeneric(
 
 make_frag_set_validation <- function(object)
 {
-  if(! object@frag_type %in% c("cr", "crsr", "none") ){
-    stop("frag_type must be either 'cr' or 'crsr' ")
-  }else{}
+  if( ncol(object@cr.df) == 1 & ncol(object@sr.df) == 1 ){
+    stop("At least one of the 'cr' and 'sr' arguments is required.")
+  }
   
-  if(is.null(object@cr.df)){
-    stop("cr.df is missing")
-  }
-  if( object@frag_type=="crsr" & is.null(object@sr.df)){
-    stop("'crsr' frag_type requires a 'sr.df' argument")
-  }
-  if(object@frag_type=="crsr"){
-    if ( ! is.matrix(object@sr.df) ) {
-      stop("With 'frag_type' = 'crsr', a matrix or a data frame is required for 'sr.df'")
+  if(  object@frag_type %in% c("sr", "crsr")) {
+    if( ! ncol(object@sr.df) > 1){
+      stop("The data frame for the 'sr' argument must have at least two columns.")
     }
-    if (ncol(object@sr.df) < 2) {
-      stop("'sr.df' must have at least two columns")
+    if( sum( ! object@sr.df[,1] %in% object@fragments.df[, 1]) != 0){
+      stop("Some objects in 'sr' are not documented in the 'fragments' data frame.")
     }
-  }
+  }  
+
+  if( object@frag_type %in% c("cr", "crsr") ) {
+    if( ! ncol(object@cr.df) > 1){
+      stop("The data frame for the 'cr' argument must have at least two columns.")
+    }
+    if( sum( ! c(object@cr.df[,1], object@cr.df[,2]) %in% object@fragments.df[, 1]) != 0){
+      stop("Some objects in 'cr' are not documented in the 'fragments' data frame.")
+    }
+  } 
+ 
   return(TRUE)
 }
+
+ 
 
 
 setClass(
@@ -61,7 +67,8 @@ setMethod(
       "\n*   Frag_type = ", object@frag_type,
       "\n*   N fragments = ",
       length(unique( na.omit(c(object@cr.df[,1],
-                               object@cr.df[,2], object@sr.df[,1]))) ),
+                               object@cr.df[,2],
+                               object@sr.df[,1]))) ),
       "\n-------------------------",
       sep=""))
   }
@@ -72,9 +79,12 @@ setMethod(
   signature = "Frag.object",
   definition = function(object)
   {
+    if( object@frag_type == "sr" ){
+      stop("No available data for the connection relationships.")
+    }
     cr.net <- graph_from_data_frame(object@cr.df, directed=FALSE, vertices=object@fragments.df)
-    cr.net <- delete_vertices(cr.net, degree(cr.net, mode="total")==0 )
-    E(cr.net)$type <- "cr"
+    cr.net <- delete_vertices(cr.net, degree(cr.net, mode="total") == 0)
+    E(cr.net)$type_relation <- "cr"
     cr.net <- set_graph_attr(cr.net, "frag_type", "connection relations")
     return(cr.net)
   }
@@ -85,16 +95,28 @@ setMethod(
   signature = "Frag.object",
   definition = function(object)
   {
-    # we recode the 'similarity units' ids in order to avoid confusion with fragments ids
+    if( object@frag_type == "cr" ){
+      stop("No available data for the similarity relationships.")
+    }
+    #  'similarity units' ids are recoded to avoid confusion with the fragments ids:
     object@sr.df[,2] <- as.character(factor(
       object@sr.df[,2], labels=paste("su", c(1:(0 + length(unique((object@sr.df[,2]))) )))
     ) )
     vertices.list <- unique( c(object@sr.df[, 1], object@sr.df[, 2]) ) 
-    names(vertices.list)  <- c("no", "type")
-    sr.net <- simplify(graph.data.frame(object@sr.df[,c(1,2)], directed=TRUE, vertices=vertices.list ))
+    sr.net <- simplify(graph_from_data_frame(object@sr.df[, 1:2], directed=TRUE, vertices=vertices.list ))
     sr.net <- graph_from_adjacency_matrix(bibcoupling(sr.net), diag=FALSE, mode="undirected" )
-    sr.net <- delete_vertices(sr.net, degree(sr.net, mode="total")==0)
-    E(sr.net)$type <- "sr"
+    sr.net <- delete_vertices(sr.net, degree(sr.net, mode="total") == 0)
+    # vertices attributes:
+    fragments.df <- object@fragments.df
+    names(fragments.df)[1] <- "name"
+    
+    attributes <- merge(                 #retrieve the  graph attributes
+      cbind(name = V(sr.net)$name),
+      cbind(fragments.df),
+      by="name", sort=FALSE)
+    vertex_attr(sr.net) <- lapply(attributes, as.character) #add vertex attributes
+    # edge attribute:
+    E(sr.net)$type_relation <- "sr"
     return(sr.net)
   }
 )
@@ -104,8 +126,8 @@ setMethod(
   signature = "Frag.object",
   definition = function(object)
   {
-    if(object@frag_type == "cr"){
-      stop("This frag.object doesn't include a 'similarity relations' dataset.")
+    if(object@frag_type != "crsr"){
+      stop("The 'cr' and 'sr' arguments are required for this function")
     }
     cr.net <- make_cr_graph(object)
     sr.net <- make_sr_graph(object)
@@ -113,22 +135,21 @@ setMethod(
     crsr.net <- cr.net %u% sr.net
     crsr.list <- decompose(crsr.net) # get one graph for each component
     # union of each graph (ie: connection graph) with its complement graph (ie: similarity graph)
-    crsr.list <- lapply(crsr.list, function(x) x %u% complementer(x) )
-    crsr.list <- lapply(crsr.list, function(x){ set_vertex_attr(x, "name_save", V(x),  V(x)$name )} )
-    # Then we merge all the graph in the list
-    crsr.net <- crsr.list[[1]] 
-    for(i in 2:length(crsr.list) ){
-      crsr.net <-  graph.union(crsr.net, crsr.list[[i]])
-    }
+    crsr.list <- lapply(crsr.list,
+                            function(x) x %u% complementer(x) )
+    crsr.list <- lapply(crsr.list,
+                            function(x){ set_vertex_attr(x, "name_save", V(x),  V(x)$name )} )
+    # merge all the graphs in the list:
+    crsr.net <- Reduce("union", crsr.list)
     
     # ATTRIBUTES ####  
     # 1. vertices attributes ####
     fragments.df <- object@fragments.df
-    names(fragments.df)[1] <- "n"
-    attributes <- merge(                 #recovery of the crsr.net graph attributes
-      cbind(name = V(crsr.net)$name ),
+    names(fragments.df)[1] <- "name"
+    attributes <- merge(                 # retrieve the crsr.net graph attributes
+      cbind(name = V(crsr.net)$name),
       cbind(fragments.df),
-      by.x="name",  by.y="n", sort=FALSE )
+      by="name", sort=FALSE)
     vertex_attr(crsr.net) <- lapply(attributes, as.character) #add vertex attributes
     
     # 2. edge attributes ####
@@ -144,10 +165,10 @@ setMethod(
     cr.net.edgelist <- as_edgelist(cr.net)
     cr.net.edgelist <- apply(cr.net.edgelist, 1, rename.edges)
     
-    # setting the "type" edge attribute to "cr"
-    E(crsr.net)$type <- NA
-    E(crsr.net)[ which(crsr.net.edgelist %in% cr.net.edgelist)  ]$type <- "cr"
-    E(crsr.net)[ is.na( E(crsr.net)$type ) ]$type <- "sr"
+    # setting the "type_relation" edge attribute to "cr"
+    E(crsr.net)$type_relation <- NA
+    E(crsr.net)[ which(crsr.net.edgelist %in% cr.net.edgelist) ]$type_relation <- "cr"
+    E(crsr.net)[ is.na( E(crsr.net)$type_relation ) ]$type_relation <- "sr"
     graph_attr(crsr.net) <- list()
     crsr.net <- set_graph_attr(crsr.net, "frag_type", "connection and similarity relations")
     
@@ -159,18 +180,24 @@ setMethod(
 # Class constructor
 make_frag_object <- function(cr, sr, fragments)
 {
-  if ( is.data.frame(cr) ) {
+  if( missing(fragments) ){
+    stop("A matrix or a data frame is required for the 'fragments' parameter.")
+  } 
+     
+  if( ! missing(cr) & ! missing(sr) ){
     cr <- as.matrix(cr)
-  }
-  if(missing(sr) ){
+    sr <- as.matrix(sr)
+    frag_type <- "crsr"
+  } else if( ! missing(cr) ){
+    cr <- as.matrix(cr)
     sr <- matrix()
     frag_type <- "cr"
-  }else{
-    if ( is.data.frame(sr) ) {
-      sr <- as.matrix(sr)
-    }
-    frag_type <- "crsr"
-  }
-  new(Class="Frag.object", cr.df = cr, sr.df = sr, fragments.df = fragments, frag_type=frag_type)
+  } else if( ! missing(sr) ){
+    sr <- as.matrix(sr)
+    cr <- matrix()
+    frag_type <- "sr"
+  }   
+  
+  new(Class="Frag.object", cr.df=cr, sr.df=sr, fragments.df=fragments, frag_type=frag_type)
 }
 

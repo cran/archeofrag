@@ -2,10 +2,10 @@
 \alias{make_cr_graph}
 \alias{make_cr_graph-methods}
 \title{
-    Make a "connection" relations graph.
+    Make a "connection" relationships graph.
 }
 \description{
-    Takes a \code{\link[=Frag.object-class]{frag.object}} and returns an undirected graph representing the "connection" relations between archaeological fragments. A "connection" relation refers to a physical connection between two fragments which were part of a same object.
+    Takes a \code{\link[=Frag.object-class]{frag.object}} and returns an undirected graph representing the "connection" relationships between archaeological fragments. A "connection" relationship refers to a physical connection between two fragments that were part of the same object.
 }
 \usage{
 make_cr_graph(object)
@@ -18,7 +18,7 @@ make_cr_graph(object)
 }
 \details{Returns an undirected graph of "\code{igraph}" class. The "fragments" data frame of the frag.object is used to set the vertices attributes.}
 \value{
-An undirected "\code{igraph}" class graph. A "frag_type" graph attribute is set with a "connection" value, describing the type of the resultant fragmentation graph.
+An undirected \code{igraph} class graph. The "frag_type" graph attribute is set with the "connection" character value.
 }
 \author{Sebastien Plutniak <sebastien.plutniak at posteo.net>}
 
@@ -34,5 +34,5 @@ crsr_g <- make_frag_object(cr=cr.df, sr=sr.df, fragments=fragments.df)
 make_cr_graph(cr_g)
 make_cr_graph(crsr_g)
 }
-\keyword{graphs}
+\keyword{build data}
 

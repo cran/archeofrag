@@ -1,10 +1,10 @@
 \name{frag.get.layers}
 \alias{frag.get.layers}
 \title{
-Extracts the subgraph of each selected stratigraphic layers.
+Extracts the subgraph of each selected stratigraphic layer.
 }
 \description{
-Extracts the subgraph of each selected stratigraphic layers.
+Extracts the subgraph of each selected stratigraphic layer (or any other type of archaeological spatial unit).
 }
 \usage{
 frag.get.layers(graph, layer.attr, sel.layers)
@@ -15,7 +15,7 @@ frag.get.layers(graph, layer.attr, sel.layers)
   \item{sel.layers}{Character. The identifier(s) of the stratigraphic layers to retrieve.}
 }
 \details{
-This function is only a convenient function to extract the subgraphs of selected stratigraphic layers. 
+This function is only a convenient function to extract the subgraphs of selected stratigraphic layers (or any other type of archaeological spatial unit). 
 A graph is created for each layer in the vertex attribute given by the \code{layer.attr} argument.
 }
 \value{
@@ -28,4 +28,4 @@ g <- frag.simul.process(n.components=20, vertices=50, disturbance = .15)
 V(g)$layers <- c(rep("layer1", 20), rep("layer2", 20), rep("layer3", 10))
 frag.get.layers(g, layer.attr="layers", sel.layers=c("layer1", "layer2"))
 }
-\keyword{graphs}
+\keyword{extraction}

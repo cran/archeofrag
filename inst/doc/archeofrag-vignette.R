@@ -10,11 +10,11 @@ library(archeofrag)
 
 ## ----make-empirical-graph-----------------------------------------------------
 data(LiangAbu)
-abu.g <- make_frag_object(df.cr, fragments = fragments.info)
+abu.g <- make_frag_object(cr=df.cr, fragments = fragments.info)
 abu.g <- make_cr_graph(abu.g)
 
 ## ----make-simulatd-graph, message=FALSE---------------------------------------
-simul.g <-frag.simul.process(n.components = 20, vertices = 50)
+simul.g <- frag.simul.process(n.components = 20, vertices = 50)
 
 ## ----manipulate-param-plot, echo=FALSE----------------------------------------
 pardefault <- par(no.readonly = TRUE)

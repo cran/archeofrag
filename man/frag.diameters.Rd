@@ -1,8 +1,8 @@
 \name{frag.diameters}
 \alias{frag.diameters}
-\title{Diameter distribution for unconnected graph}
+\title{Diameter distribution for unconnected graphs}
 \description{
-Returns the distribution of the diameter values of an unconnected graph.
+Returns the distribution of the diameter values of a fragmentation graph.
 }
 \usage{
 frag.diameters(graph, cumulative = FALSE)
@@ -14,7 +14,7 @@ frag.diameters(graph, cumulative = FALSE)
 \details{
 \code{frag.diameters} wraps the \code{igraph} \code{diameter} function.
 For graphs representing the fragmentation of archeological objects, the diameter of each component of the graph (i.e. archeological objects) can be interpreted:
-as a measure of the intensity of the fragmentation (when all the fragments of the initial object are known);
+as a measure of the intensity of fragmentation (when all the fragments of the initial object are known);
 as a measure of the scattering of the fragments (when not all the fragments are known);
 }
 \value{
@@ -32,4 +32,4 @@ frag.diameters(g, cumulative=TRUE)
 
 }
 
-\keyword{graphs}
+\keyword{measurement}
