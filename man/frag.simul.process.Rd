@@ -9,7 +9,7 @@ Simulate the fragmentation of archaeological objects scattered in two stratigrap
 \usage{
 frag.simul.process(initial.layers=2, n.components, vertices=Inf,
                    edges=Inf, balance=.5, components.balance=.5,
-                   disturbance=0, aggreg.factor=0, planar=TRUE,
+                   disturbance=0, aggreg.factor=0, planar=FALSE,
                    asymmetric.transport.from=NULL, 
                    from.observed.graph=NULL, observed.layer.attr=NULL)
 }
@@ -19,11 +19,11 @@ frag.simul.process(initial.layers=2, n.components, vertices=Inf,
   \item{n.components}{Integer. Number of objects to fragment (connected components).}
   \item{vertices}{Integer. Number of fragments (vertices).}
   \item{edges}{Integer. Number of connection relationships between fragments (edges).}
-  \item{balance}{Numeric ]0;1[. Proportion of fragments in the first layer.}
-  \item{components.balance}{Numeric ]0;1[. Proportion of components in the first layer (only used when initial.layers=2).}
+  \item{balance}{Numeric ]0;1[. Proportion of fragments to generate in the first layer before applying disturbances.}
+  \item{components.balance}{Numeric ]0;1[. Proportion of components in the first layer before applying fragmentation (only used when initial.layers=2).}
   \item{disturbance}{Numeric [0;1]. Proportion of fragments to randomly move from one layer to another.}
   \item{aggreg.factor}{Numeric [0;1]. Higher values increase the likelihood that the biggest components are selected when adding fragments or connections.}
-  \item{planar}{Logical. If TRUE, generates a planar graph.}
+  \item{planar}{Logical. If TRUE, generates a planar graph (if FALSE, the graph can be planar or not).}
   \item{asymmetric.transport.from}{Numeric or character value in "1" or "2". If not NULL, the disturbance process will be applied only to the fragments from this layer.}
   \item{from.observed.graph}{igraph object. If not NULL, the parameters observed in this fragmentation graph are used instead of the previous parameters. See details.}
   \item{observed.layer.attr}{character. Required if the \code{from.observed.graph} option is used. Name of the layer attribute in the observed graph.}
@@ -31,26 +31,33 @@ frag.simul.process(initial.layers=2, n.components, vertices=Inf,
 \details{
 This function simulates the fragmentation of archeological objects within and between two adjacent stratigraphic layers.
 Fragments are represented by vertices and the "connection" relationships ("refittings") between them are represented by edges.
+All fragments have at least one relation ("single" fragments are not generated).
 
-Some parameters are optional or depend on other parameters (messages are displayed accordingly). Namely, if two \code{initial.layers} are set, then only one of the \code{vertices} and \code{edges} parameters can be used. Using only one layer as the initial condition enables to constraint the graph with the number of vertices only, the number of edges only, or both. 
+Some parameters are optional or depend on other parameters (messages are displayed accordingly). 
+Namely, setting \code{initial.layers}=1 enables to constraint the graph with the number of vertices only, the number of edges only, or both. 
+With \code{initial.layers}=2, the \code{components.balance} can be used, and the \code{edges} parameter is not supported (only the \code{vertices} parameter can be used).
 
-The \code{disturbance} determines the proportion of fragments to "move" from one layer to another. Consequently, it generates inter-layer relationships.
-Note that the \code{balance} parameter determines the proportion of fragments in the first layer before the application of the disturbance process.
+The \code{components.balance} parameter determines the proportion of components (i.e. objects) in the first layer before the application of the fragmentation process;
+the \code{balance} parameter determines the proportion of fragments in the first layer before the application of the disturbance process.
+The \code{disturbance} parameter determines the proportion of fragments to "move" from one layer to another. Consequently, it generates inter-layer relationships.
+If \code{asymmetric.transport.from} is set to 1 or 2, the disturbance process is only applied to the fragments from layer 1 or layer 2, respectively.s
 
 If a graph is given to the \code{from.observed.graph} parameter, the properties of this graph are internally retrieved with the \code{frag.get.parameters} function (including:  the number of components, number of vertices, balance, the components.balance, the disturbance, the aggregation factor, and whether the graph is planar or not; note that the number of edges is not included as a parameter). If some other parameters of the \code{frag.simul.process} function are set, the values retrieved from the observed graph are used in replacement.
 The \code{frag.edges.weighting} is internally applied to weight the graph edges.
 
-Note that the simulator is faster with 2 \code{initial.layers} and when not using the planarity constraint.
+Setting the \code{planar} argument to TRUE constraints the graph to be planar (if this parameter is FALSE, the graph can be planar or not). 
+Note that using the \code{planar} argument requires to install the optional RBGL package and that the simulator is faster with \code{initial.layers}=2 and  \code{planar}=FALSE.
 }
+
 \value{
 An igraph object with a "frag_type" graph attribute (with the value "cr", for "connection relationship") and three vertices attributes: "name" (vertices identifiers), "layer" (with the values "1" and "2"), and "object.id" (component identifiers).
 
 }
 \author{Sebastien Plutniak <sebastien.plutniak at posteo.net>}
 \seealso{
-    \code{\link[RBGL]{boyerMyrvoldPlanarityTest}},
     \code{\link[archeofrag]{frag.get.parameters}},
-    \code{\link[archeofrag]{frag.edges.weighting}}
+    \code{\link[archeofrag]{frag.edges.weighting}},
+    \code{\link[RBGL]{boyerMyrvoldPlanarityTest}}
 }
 
 \examples{
@@ -63,8 +70,8 @@ g <- frag.simul.process(initial.layers=1,
                             balance=.5,
                             components.balance=.5,
                             disturbance=.1,
-                            planar=TRUE)
-plot(g, vertex.color=factor(V(g)$layer), 
+                            planar=FALSE)
+plot(g, vertex.color=factor(igraph::V(g)$layer), 
      vertex.size=4, vertex.label=NA)
 
 }

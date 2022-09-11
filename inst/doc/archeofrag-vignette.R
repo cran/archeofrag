@@ -65,7 +65,7 @@ simul.g <- frag.simul.process(n.components=20, vertices=50)
 #                     components.balance=.4,
 #                     disturbance=.1,
 #                     aggreg.factor=0,
-#                     planar=T,
+#                     planar=FALSE,
 #                     asymmetric.transport.from="1")
 
 ## ----frag.observer.failure, eval=FALSE----------------------------------------
@@ -73,6 +73,7 @@ simul.g <- frag.simul.process(n.components=20, vertices=50)
 
 ## ----params-------------------------------------------------------------------
 params <- frag.get.parameters(abu.g12, layer.attr="layer")
+params
 
 ## ----simulator-test-----------------------------------------------------------
 # for H2:
@@ -109,13 +110,13 @@ par(mar=c(5, 4, 4, 2))
 ## ----simulator-test2-edges, message=FALSE, fig.align="center", fig.width=4, fig.height=3----
 edges.res <- sapply(test2.results,
                     function(g) frag.get.parameters(g, "layer")$edges)
-plot(density(edges.res), main="Edges")
+plot(stats::density(edges.res), main="Edges")
 abline(v=params$edges, col="red")
 
 ## ----simulator-test2-admix, message=FALSE, fig.align="center", fig.width=4, fig.height=3----
 admix.res <- sapply(test2.results,
                     function(g) frag.layers.admixture(g, "layer"))
-plot(density(admix.res), main="Admixture")
+plot(stats::density(admix.res), main="Admixture")
 abline(v=frag.layers.admixture(abu.g12, "layer"), col="red")
 
 ## ----simul-compare, message=FALSE---------------------------------------------
@@ -147,12 +148,12 @@ round(simil.by.layers.df / sum(simil.by.layers.df, na.rm=T) * 100, 0)
 simil.dist <- max(c(simil.by.layers.df), na.rm=T) - simil.by.layers.df
 simil.dist <- as.dist(simil.dist)
 # hierarchical clustering:
-clust.res <- hclust(simil.dist, method="ward.D2")
+clust.res <- stats::hclust(simil.dist, method="ward.D2")
 
 ## ----similarity-dendr-fig, fig.width = 3, fig.height = 3, fig.align="center", fig.cap="Hierarchical clustering of the pottery layers in Liang Abu (distance: based on the number of similarity relationships; clustering method: Ward).", eval=T, message=F----
 clust.res$labels <- as.character(factor(clust.res$labels, 
-                     levels=c("0", "1", "2"),
-                     labels=c("layer 0", "layer 1", "layer 2")))
+                                        levels=c("0", "1", "2"),
+                                        labels=c("layer 0", "layer 1", "layer 2")))
 plot(clust.res, hang=-1, axes=F, ann=F)
 
 ## ----subgraphs-simul----------------------------------------------------------
