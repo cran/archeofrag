@@ -1,6 +1,6 @@
 
 
-frag.get.parameters <- function(graph, layer.attr){
+frag.get.parameters <- function(graph, layer.attr, verbose = TRUE){
   # tests:
   .check.frag.graph(graph)
   .check.layer.argument(graph, layer.attr)
@@ -13,23 +13,26 @@ frag.get.parameters <- function(graph, layer.attr){
     igraph::E(graph)$weight <- 1
   }
   
-  # test of there are two layers:
-  if(length(unique(igraph::V(graph)$layer)) != 2) warning("The graph does not have two layers, disturbance and balance values will be meaningless.")
+  # test if there are two layers:
+  if(verbose & length(unique(igraph::V(graph)$layer)) != 2) {
+    warning("The graph does not have two layers, disturbance and balance values will be meaningless.")
+  }
   
-  # balance: proportion of non-disturbed pieces in the two layers:
+  # balance: considering the subgraph including only fragments connected to fragments from the same spatial unit, proportion of fragments in the 1st spatial unit (alphanumerically)
   v1 <- igraph::V(graph)[igraph::V(graph)$layer == unique(igraph::V(graph)$layer)[1]]
   v2 <- igraph::V(graph)[igraph::V(graph)$layer == unique(igraph::V(graph)$layer)[2]]
-  subgraph <- igraph::subgraph.edges(graph, igraph::E(graph)[ ! v1 %--% v2 ])
-  balance <- (table(igraph::V(subgraph)$layer) / sum(table(igraph::V(subgraph)$layer)) )[1]
-  balance <- round(balance, 2)
+  subgraph <- igraph::subgraph_from_edges(graph, igraph::E(graph)[ ! v1 %--% v2 ])
+  balance <- table(igraph::V(subgraph)$layer)
+  balance <- round(balance[1] / sum(balance), 2)
   
-  # components balance:
+  # components balance: considering the subgraph including only fragments connected to fragments from the same spatial unit, proportion of components in the 1st spatial unit (alphanumerically)
   compo.balance <- sapply(igraph::decompose(subgraph), 
                           function(x) igraph::V(x)$layer[1])
-  compo.balance <- round(table(compo.balance)[1] / sum(table(compo.balance)), 2) 
+  compo.balance <- table(compo.balance)
+  compo.balance <- round(compo.balance[1] / sum(compo.balance), 2) 
   
   # disturbance: number of pieces which might have move:
-  g.list <- frag.get.layers.pair(graph, "layer", unique(igraph::V(graph)$layer), mixed.components.only = TRUE)
+  g.list <- frag.get.layers.pair(graph, "layer", unique(igraph::V(graph)$layer), mixed.components.only = TRUE, verbose = verbose)
   disturbance <- 0
   if(! is.null(g.list)){
     g.list <- igraph::decompose(g.list)
@@ -47,11 +50,11 @@ frag.get.parameters <- function(graph, layer.attr){
   aggreg.factor <- round(aggreg.factor, 2)
   
   # planarity (if the RBGL package is installed)
-  if (requireNamespace("RBGL", quietly = TRUE)) {
+  is.planar <- NA
+  if ( requireNamespace("RBGL", quietly=TRUE)  ) {
     is.planar <- RBGL::boyerMyrvoldPlanarityTest(igraph::as_graphnel(graph))
-  }else{
-    warning("The RBGL package is not installed, the `planarity` value is indeterminated and set to FALSE.")
-    is.planar <- FALSE
+  } else if(verbose) {
+    warning("The RBGL package is not installed, the `planarity` value is indeterminated and set to NA")
   }
   # list results:
   res <- list("n.components" = igraph::components(graph)$no,

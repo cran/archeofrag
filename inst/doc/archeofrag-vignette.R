@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   fig.path = "man/figures/",
@@ -8,7 +8,7 @@ knitr::opts_chunk$set(
 ## ----make-empirical-graph,  message=F-----------------------------------------
 library(archeofrag)
 data(LiangAbu)
-abu.frag <- make_frag_object(cr=df.cr, fragments=fragments.info)
+abu.frag <- make_frag_object(cr=liangabu.connection, fragments=liangabu.fragments)
 abu.g <- make_cr_graph(abu.frag)
 
 ## ----frag.relations.by.layers-------------------------------------------------
@@ -57,19 +57,19 @@ frag.layers.admixture(abu.g12morpho, layer.attr="layer")
 simul.g <- frag.simul.process(n.components=20, vertices=50)
 
 ## ----simulator-all-params, eval=F---------------------------------------------
-#  frag.simul.process(initial.layers=1,
-#                     n.components=20,
-#                     vertices=50,
-#                     edges=40,
-#                     balance=.4,
-#                     components.balance=.4,
-#                     disturbance=.1,
-#                     aggreg.factor=0,
-#                     planar=FALSE,
-#                     asymmetric.transport.from="1")
+# frag.simul.process(initial.layers=1,
+#                    n.components=20,
+#                    vertices=50,
+#                    edges=40,
+#                    balance=.4,
+#                    components.balance=.4,
+#                    disturbance=.1,
+#                    aggreg.factor=0,
+#                    planar=FALSE,
+#                    asymmetric.transport.from="1")
 
 ## ----frag.observer.failure, eval=FALSE----------------------------------------
-#  frag.observer.failure(abu.g12, likelihood=0.2)
+# frag.observer.failure(abu.g12, likelihood=0.2)
 
 ## ----params-------------------------------------------------------------------
 params <- frag.get.parameters(abu.g12, layer.attr="layer")
@@ -131,7 +131,7 @@ frag.simul.summarise(abu.g12, layer.attr="layer",
 
 ## ----make-similarity----------------------------------------------------------
 # make a frag object and generate a similarity graph:
-abu.frag <- make_frag_object(sr=df.sr, fragments=fragments.info)
+abu.frag <- make_frag_object(sr=liangabu.similarity, fragments=liangabu.fragments)
 abu.sr <- make_sr_graph(abu.frag)
 
 ## ----count-similarity---------------------------------------------------------

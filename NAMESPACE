@@ -4,6 +4,7 @@ export(frag.edges.weighting)
 export(frag.get.layers)
 export(frag.get.layers.pair)
 export(frag.graph.plot)
+export(frag.graph.reduce)
 export(frag.layers.admixture)
 export(frag.layers.cohesion)
 export(frag.get.parameters)
@@ -58,7 +59,7 @@ importFrom(igraph,
 	set_graph_attr, 
 	set_vertex_attr, 
 	simplify, 
-	subgraph.edges, 
+	subgraph_from_edges, 
 	subgraph_isomorphisms, 
 	transitivity, 
 	union,

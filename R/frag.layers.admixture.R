@@ -1,4 +1,4 @@
-frag.layers.admixture <- function(graph, layer.attr){
+frag.layers.admixture <- function(graph, layer.attr, morphometry=NULL, x=NULL, y=NULL, z=NULL, verbose=TRUE){
   # output : value [0;1]. 0 = "unmixed layers", 1 = "highly mixed layers"
   # tests:
   .check.frag.graph(graph)
@@ -7,22 +7,27 @@ frag.layers.admixture <- function(graph, layer.attr){
   # extract the user-defined layer attribute and reintegrate it as a vertices attribute named "layer":
   layers <- igraph::vertex_attr(graph, layer.attr)
   igraph::V(graph)$layer <- layers
-  layers <- unique(layers)
+  layers <- sort(unique(layers))
   
-  # Conditionnal tests in function of the number of layers:
-  if(length(layers) < 2) stop("At least two different layers are required.")
+  # Conditional tests in function of the number of layers:
+  if(verbose & length(layers) < 2) stop("At least two different layers are required.")
   
   if(length(layers) == 2){
-    if(is.null(igraph::E(graph)$weight)) stop("The edges must be weighted (using the 'frag.edges.weighting' function).")
+    if(verbose & is.null(igraph::E(graph)$weight)) stop("The edges must be weighted (using the 'frag.edges.weighting' function).")
     results <- c(admixture = 1 - sum(frag.layers.cohesion(graph, "layer")))
     return(results)
   } else { # if length(layers) > 2
     pairs <- utils::combn(layers, 2) 
-    warning("More than 2 layers: the 'frag.edges.weighting' function has been applied to each pair of layers.")
-    results <- sapply(1:ncol(pairs), function(x){
-      gsub <- frag.get.layers.pair(graph, layer.attr, c(pairs[1, x], pairs[2, x]))
-      gsub <- frag.edges.weighting(gsub, layer.attr)
-      1 - sum(frag.layers.cohesion(gsub, layer.attr))
+    message("More than 2 layers: the 'frag.edges.weighting' function is applied to each pair of layers.")
+    results <- sapply(1:ncol(pairs), function(id){
+      gsub <- frag.get.layers.pair(graph, layer.attr, c(pairs[1, id], pairs[2, id]), verbose = verbose)
+      if(length(unique(V(gsub)$layer)) == 2){
+        gsub <- frag.edges.weighting(gsub, layer.attr, morphometry, x, y, z)
+        1 - sum(frag.layers.cohesion(gsub, layer.attr))
+      } else {
+        NA
+      }
+      
     })
     names(results) <- apply(pairs, 2, function(x) paste(x, collapse = "/"))
     results

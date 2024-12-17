@@ -1,0 +1,23 @@
+
+
+* ajouter un warning dans make_cr_graph, make_crsr_graph, make_sr_graph quand le graphe généré contient des loops et/ou multiple edges -- 20241208 : je ne l'observe plus
+* Traiter le cas des valeurs d'admixture négatives. (par eex: data du tai) -- 20241208 : je ne l'observe plus
+* bug dans frag.layers.cohesion(), lorsque 1 layer ne contient qu'1 fragment
+* frag.get.parameters: évenutellement, dinsituger 
+	* frag.balance.estimated = actuelle mesure de 'balance'
+	* frag.balance.observed: = ratio du nbre de fragments
+
+* TODO : add a function (or parameter in `frag.layers.admixture()`) to handle similarity relationships, return result as a distance object
+
+
+
+# sur le modèle
+
+* la définition de balance est peu clair "Proportion of fragments to generate in the first layer before applying disturbances."
+  car c'est un paramètre ni à propos d'état initial ni à propos de l'état final
+  (mais d'un état intermédiaire)
+  
+  Il est plus intéressant de contrôler la proportion finale 
+  
+  Ah non. Interpréter comme :
+  Si il n'y avait pas eu de déplacements par perturbation, alors le différentiel de nbre de fragment aurait dû être celui ci

@@ -1,6 +1,23 @@
+# archeofrag 0.1.0
+Released: 2024-12-16
+
+Fourth major release.
+
+* Fix in the `frag.layers.admixture()` and `frag.layers.cohesion()` functions to handle pair of layers when only one layer includes fragments.
+* In the `frag.layers.cohesion()` and `frag.layers.admixture()` functions, new optionnal parameters ("morphometry", "x", "y", "z") to pass to the `frag.edges.weighting()` function when applied to multiple pairs of layers.
+* New `frag.graph.reduce()` function to reduce the number of fragments of a fragmentation graph while preserving the number of objects (i.e. connected components).
+* Fix the `frag.relations.by.layers()` to return a square matrix.
+* Values returned by `frag.layers.admixture()` and `frag.layers.cohesion()` are now rounded to four digits (to avoid negative admixture values).
+* Fix the ordering of the pairs of layers returned by `frag.layers.admixture()` to correspond with the same order returned by `frag.layers.cohesion()`.
+* Revising and optimising `frag.edges.weighting()`.
+* Add verbose parameter to `frag.edges.weighting()`, `frag.get.layers.pair()`, `frag.get.parameters()`, `frag.layers.admixture()`, `frag.layers.cohesion()`.
+* Add datasets: Chauzey, Le Bout des Vergnes, Grande Rivoire, Tai, Font-Juvenal.
+* Add dependency to R (>= 3.5.0) to use serialized datasets (RData format).
+* Balance and components balance computation in `frag.get.parameters()` were fixed to measure the value of the spatial unit with less fragments or components, respectively. This fix might result in values different from the value get before with this function.
+* Add a 'components.balance' variable in the results of `frag.simul.compare`.
 
 # archeofrag 0.8.3
-Released: 2022-0?-??
+Released: 2022-11-16
 
 * add an option to remove the vertices in the `frag.observer.failure()` function.
 
@@ -18,7 +35,7 @@ Released: 2022-07-13
 * igraph functions' names are updated.
 * creation of a utils.R file, including internal functions to check the fragmentation graph and the "layer" argument.
 
-# archeofrag 0.8
+# archeofrag 0.8.0
 Released: 2022-03-08
 
 Third major release.
@@ -34,7 +51,7 @@ Released: 2022-02-17
 * the balance, disturbance, and aggreg.factor values returned by `frag.get.parameters()` are now rounded with two digits.
 * an error has been corrected in the `asymetric.transport.from` parameter of the `frag.simul.process()` function.
 
-# archeofrag 0.7
+# archeofrag 0.7.0
 Released: 2021-04-26
 
 Second major release, after complete revision of the documentation.
@@ -57,7 +74,7 @@ Released: 2021-03-30
 * The edges of the graphs generated with `frag.simul.process()` are now internally weighted with the `frag.edges.weighting()` function.
 * `frag.observer.failure()`: new function to simulate the inaccuracy of an observer in determining the relationships between fragments.
 
-# archeofrag 0.6
+# archeofrag 0.6.0
 Released: 2020-11-27
 
 This is the first public release of the archeofrag package.
