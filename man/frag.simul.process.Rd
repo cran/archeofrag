@@ -21,7 +21,7 @@ frag.simul.process(initial.layers=2, n.components=NULL, vertices=Inf,
   \item{edges}{Integer. Final number of connection relationships between fragments (edges).}
   \item{balance}{Numeric ]0;1[. Proportion of fragments to generate in the first spatial unit before applying disturbance.}
   \item{components.balance}{Numeric ]0;1[. Proportion of objects (connected components) in the first spatial unit before applying fragmentation (only used when initial.layers=2).}
-  \item{disturbance}{Numeric [0;1]. Final proportion of fragments moved from one spatial unit to the other.}
+  \item{disturbance}{Numeric [0;1]. Final proportion of fragments moved from a spatial unit to the other.}
   \item{aggreg.factor}{Numeric [0;1]. Higher values increase the likelihood that the biggest components are selected when adding fragments or connections.}
   \item{planar}{Logical. If TRUE, generates a planar graph (if FALSE, the graph can be planar or not).}
   \item{asymmetric.transport.from}{Numeric or character value in "1" or "2" (refering to the first and second spatial unit). If not NULL, the disturbance process will be applied only to the fragments from this spatial unit.}
@@ -39,7 +39,7 @@ With \code{initial.layers}=2, the \code{components.balance} can be used, and the
 
 The \code{components.balance} parameter determines the proportion of components (i.e. objects) in the first spatial unit before the application of the fragmentation process;
 the \code{balance} parameter determines the proportion of fragments in the first spatial unit before the application of the disturbance process.
-The \code{disturbance} parameter determines the proportion of fragments to "move" from one spatial unit to another. Consequently, it generates inter-spatial units relationships.
+The \code{disturbance} parameter determines the proportion of fragments to move from one spatial unit to another. Consequently, it generates inter-spatial units relationships. Highest admixture are generated with disturbance=0.5. 
 If \code{asymmetric.transport.from} is set to 1 or 2, the disturbance process is only applied to the fragments from spatial unit 1 or spatial unit 2, respectively.
 
 If a graph is given to the \code{from.observed.graph} parameter, the properties of this graph are internally retrieved with the \code{frag.get.parameters} function (including:  the number of components, number of vertices, balance, the components.balance, the disturbance, the aggregation factor, and whether the graph is planar or not; note that the number of edges is not included as a parameter). If some other parameters of the \code{frag.simul.process} function are set, the values retrieved from the observed graph are used in replacement.

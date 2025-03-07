@@ -7,7 +7,6 @@ knitr::opts_chunk$set(
 
 ## ----make-empirical-graph,  message=F-----------------------------------------
 library(archeofrag)
-data(LiangAbu)
 abu.frag <- make_frag_object(cr=liangabu.connection, fragments=liangabu.fragments)
 abu.g <- make_cr_graph(abu.frag)
 

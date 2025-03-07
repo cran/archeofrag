@@ -142,7 +142,7 @@
   # default behaviour:
   v.to.disturb <- sample(seq(1, igraph::gorder(g)), nr.v.to.disturb)
   # if asymmetric.transport.from is set:
-  if( ! is.null(asymmetric.transport.from)){
+  if(asymmetric.transport.from != 0){
     if(nr.v.to.disturb <= length(igraph::V(g)[ igraph::V(g)$layer == asymmetric.transport.from]) ){
       v.to.disturb <- sample(igraph::V(g)[ igraph::V(g)$layer == asymmetric.transport.from], nr.v.to.disturb)
     } else{
@@ -190,7 +190,6 @@ frag.simul.process <- function(initial.layers=2, n.components=NULL, vertices=Inf
       warning("The planarity of the graph value is indeterminated, simulations are executed with no planar constraint.")
     }
   }
-  
   # BEGIN Tests:
   if(is.null(n.components)) stop("The 'n.components' parameter is required.")
 
@@ -229,10 +228,9 @@ frag.simul.process <- function(initial.layers=2, n.components=NULL, vertices=Inf
     stop("The 'aggreg.factor' parameter must range in [0;1].")
   }
 
-  if( ! is.null(asymmetric.transport.from) ){
-    if(! asymmetric.transport.from %in% c(1, 2, "1", "2")){
-      stop("The 'asymmetric.transport.from' parameter must have a value in 1 or 2.")
-    }
+  if(missing(asymmetric.transport.from) | is.null(asymmetric.transport.from)) asymmetric.transport.from <- 0
+  if(! asymmetric.transport.from %in% c(0, 1, 2, "0" ,"1", "2")){
+    stop("Values for 'asymmetric.transport.from' must be one of 1, 2 or 0.")
   }
   
   if(n.components > vertices / 2){

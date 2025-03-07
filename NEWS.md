@@ -1,4 +1,19 @@
-# archeofrag 0.1.0
+
+
+
+# archeofrag 1.1.0
+Released: 2025-03-07
+
+* Add datasets: CuzoulCave, CuzoulSouth. The former Tai dataset is splited into TaiCave and TaiSouth.
+* In `frag.get.parameters()` if the vertices 'layer' attribute of the graph do not have two values, the variables 'balance', 'components.balance', and 'disturbance' are not computed and NAs are returned.
+* In `frag.get.parameters()` the output variable 'weightsum' is renamed 'edge.weights.sum', and addition of two output variables: 'edge.weights.median' and 'edge.weights.median.abs.dev.'.
+* In `frag.simul.compare()` add support for 'edge.weights.sum', 'edge.weights.median', and 'edge.weights.median.abs.dev.' variables.
+* In `frag.simulprocess()` the 'asymmetric.transport.from' parameter now admits value 0 (handled as NULL values and disabling the asymmetric.transport feature).
+* Revision of `frag.graph.reduce()`: to preserve the number of connected components, the use of igraph::articulation points is introduced. A bug in the while loops is fixed with a new control through the 'is.reducible' variable.
+* Corrections in the documentation.
+* Change default colors in `frag.graph.plot()`.
+
+# archeofrag 1.0.0
 Released: 2024-12-16
 
 Fourth major release.
