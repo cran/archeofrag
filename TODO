@@ -1,9 +1,11 @@
 
 
-* ajouter un warning dans make_cr_graph, make_crsr_graph, make_sr_graph quand le graphe généré contient des loops et/ou multiple edges -- 20241208 : je ne l'observe plus
-* Traiter le cas des valeurs d'admixture négatives. (par ex: data du tai) -- 20241208 : je ne l'observe plus
-* bug dans frag.layers.cohesion(), lorsque 1 layer ne contient qu'1 fragment
-* frag.get.parameters:  
+
+# new features
+
+* frag.graph.reduce() : ajouter param 'conserve.frag.balance', 'conserve.objects.balance'
+* frag.layers.cohesion() : bug lorsque 1 layer ne contient qu'1 fragment
+* frag.get.parameters() :  
 	* distinguer (en assurant retrocompatibilité) : 
 		* frag.balance.estimated = actuelle mesure de 'balance'
 		* frag.balance.observed: = ratio du nbre de fragments in 1st layer.    table(igraph::V(g)$layer)[1] / igraph::gorder(g)
@@ -12,13 +14,22 @@
 		* disturbance.observed = 
 		* disturbance.estimated = 
 	* étudier l'effet du remplacement de sd() par mad() dans le calcul de l'aggration
-* frag.simul.compare : ajouter les variables supplémentaires générées par frag.get.parameters (n.object, weights.median, weights.mad, disturbance, etc.)
+* frag.simul.compare() : ajouter les variables supplémentaires générées par frag.get.parameters (n.object,  disturbance, etc.)
+* frag.graph.plot() : permettre de modifier les couleurs?
+* add a function (or parameter in `frag.layers.admixture()`) to handle similarity relationships, return result as a distance object
 
-* TODO : add a function (or parameter in `frag.layers.admixture()`) to handle similarity relationships, return result as a distance object
-* frag.graph.plot: permettre de modifier les couleurs?
+* une mesure gloable de 'cohesion' pour l'ensemble des paires (par exemple : moyenne + SD  ou median + mad)
 
+
+# bugs
+
+* ajouter un warning dans make_cr_graph, make_crsr_graph, make_sr_graph quand le graphe généré contient des loops et/ou multiple edges -- 20241208 : je ne l'observe plus
+* Traiter le cas des valeurs d'admixture négatives. (par ex: data du tai) -- 20241208 : je ne l'observe plus
+* Le paramètres initial.layer, selon qu'il soit 1 ou 2, donne des résultats tres differents concernant la distribution des valeurs de cohésion et d'admixture. Elles sont bcp plus variées avec initial.layer=1
 
 # sur le modèle
+
+## balance
 
 * la définition de balance est peu clair "Proportion of fragments to generate in the first layer before applying disturbances."
   car c'est un paramètre ni à propos de l'état initial ni à propos de l'état final
@@ -26,5 +37,10 @@
   
   Il est plus intéressant de contrôler la proportion finale 
   
-  Ah non. Interpréter comme :
-  Si il n'y avait pas eu de déplacements par perturbation, alors le différentiel de nbre de fragment aurait dû être celui ci
+  Autre interpétation possible :  Si il n'y avait pas eu de déplacements par perturbation, alors le différentiel de nbre de fragment aurait dû être celui ci
+
+## Disturbance
+
+* application de la disturbance: 
+	* un fragment ne peut pas être déplacé 2 fois (car sample(replace = FALSE) )
+	* l'admixture est maximale avec disturbance = 0.5 (et non avec disturbance = 1)
