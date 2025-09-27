@@ -16,4 +16,3 @@ test_that("frag.simul.compare works", {
   }
 })
 
-
