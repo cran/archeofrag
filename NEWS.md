@@ -1,4 +1,10 @@
 
+# archeofrag 1.2.4
+Released: 2025-04-22
+
+* Add `frag.cohesion.ranking()` function.
+
+
 # archeofrag 1.2.3
 Released: 2025-09-26
 

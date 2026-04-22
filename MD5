@@ -1,7 +1,8 @@
-8be532e933d1577b1eaf6e1eb36152db *DESCRIPTION
-76c0c6c8ac832ffd99e86bcf972d7356 *NAMESPACE
-dc6cd3cd4244d2589735b7a61cc50838 *NEWS.md
+762b35365ec13279365d6138f399c68e *DESCRIPTION
+61c2497bc9ccb5668244730fd6400928 *NAMESPACE
+2d0dc9c14391364d82575078aa4ce86c *NEWS.md
 c2fbff7377a363bd07cec291f169f2fd *R/LiangAbu.R
+30e2e57a23d35e01f831d006c424cadc *R/frag.cohesion.ranking.R
 c684271ca368807c1a2d307b403b4ddd *R/frag.cycles.R
 139ee05d8482ab387383e961871104d8 *R/frag.diameters.R
 83bb70260c56f98b3b7f53397704facb *R/frag.edges.weighting.R
@@ -18,9 +19,9 @@ bca3755edc171f0c6c7e40055e6fe608 *R/frag.get.parameters.R
 2cbead9394cd2c556553ba2ab2c7d03d *R/frag.simul.compare.R
 15f7102fff14a81c0021644f9e916684 *R/frag.simul.process.R
 bd900691905aab6bfda87bff95b7aac4 *R/frag.simul.summarise.R
-4180d167f9b08971c1bca0e392595f54 *R/make_frag_object.R
+16bf89111e09252536d4b10f9fcbedeb *R/make_frag_object.R
 50b70488049de6336170dbfac580c137 *R/utils.R
-1431742a65bb10501f26e683d2bf0c55 *TODO
+b48865ed1cd42e8c0def2caec3c2d34f *TODO
 4b00578d34925e5e15c832e8118e9d93 *build/vignette.rds
 0bcecfad97bc194ba2abf1144d12d994 *data/BoutDesVergnes.RData
 12bbaf4f9a4e8212b74cd2cc7041a657 *data/Chauzeys.RData
@@ -41,7 +42,7 @@ e849443007488fa17e790441614a828f *data/StCesaire2024.RData
 b5ffe115ea931570cd28cf0becd83660 *inst/CITATION
 9eb703da87dede9598e5cb2c9ca14f59 *inst/doc/archeofrag-vignette.R
 4299e92b729f716eb2ef15d52803fbbd *inst/doc/archeofrag-vignette.Rmd
-a584556dc7c16c83cb71ed4e0f940c96 *inst/doc/archeofrag-vignette.html
+9fdade1051f34f8fc640dd7e6283e5c8 *inst/doc/archeofrag-vignette.html
 65dbdab50926ee2b803c0395f25ee590 *man/BoutDesVergnes.Rd
 17dd3d7d5fe17eb2ce495355ae88687c *man/Chauzeys.Rd
 1504ecea7101c3dbacb9925fe70719bd *man/CuzoulCave.Rd
@@ -60,6 +61,7 @@ c7ce225ee460f43efd1288be9c4ac734 *man/GrandeRivoire2ndMeso.Rd
 7046f52c86652ecf495b57bb8fd5e7db *man/TaiCave.Rd
 5b781f3c90de24b74ab05c00c77e80c0 *man/TaiSouth.Rd
 8cd4c3fee262707d2ea97be46826e4e8 *man/archeofrag-package.Rd
+9d3359bc0c697eff5a79ffd38fc415a8 *man/frag.cohesion.ranking.Rd
 4740e68da41d199f72290ad23f58d973 *man/frag.cycles.Rd
 9643c713783fbd30ef78c0c6d7e8dd04 *man/frag.diameters.Rd
 3d30dfc4d1bad95f71f12ee8805640fb *man/frag.edges.weighting.Rd
@@ -69,7 +71,7 @@ c7ce225ee460f43efd1288be9c4ac734 *man/GrandeRivoire2ndMeso.Rd
 19efdc72e120e669097cbaee97df2971 *man/frag.graph.plot.Rd
 5134f8e874530420368b6cb2dcf4628e *man/frag.graph.reduce.Rd
 d460b63459314a0414df4d90a51f09a1 *man/frag.layers.admixture.Rd
-8a9de8f763c19b6bc6bbb63cc053763e *man/frag.layers.cohesion.Rd
+dd752cbc7157dd888b0cadebdb54bc04 *man/frag.layers.cohesion.Rd
 92de223664181af7566926228e9620c0 *man/frag.observer.failure.Rd
 b8f6f0b76ebf67b6d2106c0f795bb35a *man/frag.path.lengths.Rd
 3d5ac0dc95dfff3e3e1b6bc52998b5ff *man/frag.relations.by.layers.Rd
@@ -97,5 +99,6 @@ de246c1fb767ca410d68ed014a8466d0 *tests/testthat/test-frag.simul.compare.R
 49d3d49b8ac5513562fbea261a5fe946 *tests/testthat/test-frag.simul.process.R
 186f12083ecbe1988bcb8b00e54a7e20 *tests/testthat/test-frag.simul.summarise.R
 28e4b50b9dfb3f440aa36977f2126abe *tests/testthat/test-make_frag_object.R
+fcb460dbae76c5bde191984497a188b1 *tests/testthat/test.frag.cohesion.ranking.R
 7d8fd362bda9b0b752d9ee7a11b3b90d *tests/testthat/test.frag.get.parameters.R
 4299e92b729f716eb2ef15d52803fbbd *vignettes/archeofrag-vignette.Rmd

@@ -1,8 +1,13 @@
 
 
 
+# Documentation
+* Add explaination about the weighting formula
+* frag.Graph.Reduce: preciser qu 'est pour un graph avec 2 layers
+
 # new features
 
+* quand X,Y,Z n'est pas numérique erreur sans message
 * frag.graph.reduce() : 
     * ajouter param  'conserve.objects.balance'
     * ajouter param  'conserve.aggregation'
@@ -20,11 +25,15 @@
 * frag.graph.plot() : permettre de modifier les couleurs?
 * add a function (or parameter in `frag.layers.admixture()`) to handle similarity relationships, return result as a distance object
 
-* une mesure gloable de 'cohesion' pour l'ensemble des paires (par exemple : moyenne + SD  ou median + mad)
+* une mesure globale de 'cohesion' pour l'ensemble des paires (par exemple : moyenne + SD  ou median + mad)
 * ajouter une limite maximum de fragments par objet
+* pour init.layers=2, répartir le nombre d'arêtes en utilisant la  proportion de "frag.balance"  
+
 
 # bugs
 
+* si une colonne du tableau frag contient des nombres, meme formatés en texte, ceux ci sont transformés en nombre par  read.csv dans archeofrag.gui (donc les éventuels leading zero sont supprimés). Pas vraiment de solution
+* si le tableau CR a > 2 colonnes, erreur sans alerte.  
 * ajouter un warning dans make_cr_graph, make_crsr_graph, make_sr_graph quand le graphe généré contient des loops et/ou multiple edges -- 20241208 : je ne l'observe plus
 * Traiter le cas des valeurs d'admixture négatives. (par ex: data du tai) -- 20241208 : je ne l'observe plus
 * Le paramètres initial.layer, selon qu'il soit 1 ou 2, donne des résultats tres differents concernant la distribution des valeurs de cohésion et d'admixture. Elles sont bcp plus variées avec initial.layer=1 (est-ce un pb?)
@@ -43,6 +52,8 @@
 
 ## Disturbance
 
-* application de la disturbance: 
-	* un fragment ne peut pas être déplacé 2 fois (car sample(replace = FALSE) )
-	* l'admixture est maximale avec disturbance = 0.5 (et non avec disturbance = 1)
+* un fragment ne peut pas être déplacé 2 fois (car sample(replace = FALSE) )
+* Note: l'admixture est maximale avec disturbance = 0.5 (et non avec disturbance = 1)
+* proposer deux modalités de disturbance:
+    1. intercalé avec la fragmentation (adéquat pour simuler les fragmentation de céramique, os)
+    2. à la fin de la fragmentation (adéquat pour simuler les fragmentations lithiques)
